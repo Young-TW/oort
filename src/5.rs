@@ -21,7 +21,13 @@ impl Ship {
         Ship {}
     }
 
-    fn print_debug_info(&mut self, dp: Vec2, time_to_target: f64, direction: Vec2, faster_angle: f64) {
+    fn print_debug_info(
+        &mut self,
+        dp: Vec2,
+        time_to_target: f64,
+        direction: Vec2,
+        faster_angle: f64,
+    ) {
         debug!("distance to target: {}", dp.length());
         debug!("time to target: {}", time_to_target);
         debug!("direction: {}", direction);
@@ -41,9 +47,17 @@ impl Ship {
 
         turn(angle_diff(heading(), direction.angle()));
 
-        Self::print_debug_info(self, distance, time_to_target, direction, angle_diff(direction.angle(), target().angle()));
+        Self::print_debug_info(
+            self,
+            distance,
+            time_to_target,
+            direction,
+            angle_diff(direction.angle(), target().angle()),
+        );
         draw_line(position(), target(), 0x00ff00);
         draw_line(position(), direction, 0xffffff);
         fire(0);
     }
 }
+
+// not done yet
