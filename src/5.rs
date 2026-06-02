@@ -39,25 +39,21 @@ impl Ship {
         let distance = target() - position();
         let time_to_target = distance.length() / BULLET_SPEED;
 
-        let target_after_t = target() + target_velocity() * time_to_target;
-        let distance_after_t = distance + target_velocity() * time_to_target;
-        let time_to_target_after_t: f64 = distance_after_t.length() / BULLET_SPEED;
-
-        let direction = distance_after_t + target_velocity() * time_to_target_after_t;
-
-        turn(angle_diff(heading(), direction.angle()));
-
-        Self::print_debug_info(
-            self,
-            distance,
-            time_to_target,
-            direction,
-            angle_diff(direction.angle(), target().angle()),
-        );
-        draw_line(position(), target(), 0x00ff00);
-        draw_line(position(), direction, 0xffffff);
+        let distance = target() - position();
+        let mut t = distance.length() / BULLET_SPEED;
+        for _ in 0..5 {
+            let predicted = target() + target_velocity() * t - position();
+            t = predicted.length() / BULLET_SPEED;
+        }
+        let aim = target() + target_velocity() * t;
+        let aim_direction = aim - position();
+        let angle_error = angle_diff(heading(), aim_direction.angle());
+        turn(angle_error * 40.0); // 比例控制，誤差越大轉越快
         fire(0);
+
+        debug!("t: {}", t);
+        debug!("target_vel: {}", target_velocity());
+        debug!("predicted aim: {}", target() + target_velocity() * t);
+        debug!("my pos: {}", position());
     }
 }
-
-// not done yet
