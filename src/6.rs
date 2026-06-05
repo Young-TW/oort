@@ -16,32 +16,20 @@ impl Ship {
         Ship {}
     }
 
-    fn print_debug_info(&mut self) {
-        debug!("distance: {}", target() - position());
-        debug!(
-            "distance.dot(): {}",
-            (target() - position()).dot(target() - position())
-        );
-    }
-
-    pub fn calculate_direction_to_target() -> Vec2<f64> {
-        let direction = target() - position();
-        let angle = direction.y.atan2(direction.x);
-        vec2(angle.cos(), angle.sin())
-    }
-
     pub fn tick(&mut self) {
-        let to_target = angle_diff(heading(), target().angle());
         let distance = target() - position();
         let time_to_target = distance.length() / BULLET_SPEED;
-        let target_after_t = (target() + target_velocity() * time_to_target).normalize();
-        let to_target_after_t = angle_diff(heading(), target_after_t.angle());
-        turn(to_target_after_t);
-        accelerate(angle_diff(heading(), Self::calculate_direction_to_target()));
-        fire(0);
 
-        self.print_debug_info();
+        let distance = target() - position();
+        let mut t = distance.length() / BULLET_SPEED;
+        for _ in 0..5 {
+            let predicted = target() + target_velocity() * t - position();
+            t = predicted.length() / BULLET_SPEED;
+        }
+        let aim = target() + target_velocity() * t;
+        let aim_direction = aim - position();
+        let angle_error = angle_diff(heading(), aim_direction.angle());
+        turn(angle_error * 40.0); // 比例控制，誤差越大轉越快
+        fire(0);
     }
 }
-
-// not done yet
